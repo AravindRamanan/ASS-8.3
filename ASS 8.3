@@ -1,1 +1,44 @@
- architecture of Apache Hadoop Yarn :
+Architecture of Apache Hadoop Yarn :
+The ResourceManager and the NodeManager form the data-computation framework.
+
+RESOURCE MANAGER:
+
+The ResourceManager is the ultimate authority that arbitrates resources among all the applications in the system.
+
+The ResourceManager has two main components: Scheduler and ApplicationsManager.
+
+The Scheduler is responsible for allocating resources to the various running applications subject to familiar constraints of capacities, queues etc. 
+
+The Scheduler is pure scheduler in the sense that it performs no monitoring or tracking of status for the application. Also, it offers no guarantees about restarting failed tasks either due to application failure or hardware failures. 
+
+The Scheduler performs its scheduling function based the resource requirements of the applications.
+There are three types of schedulers.They are,
+                     
+                     1) FIFO
+                     2) CAPACITY SCHEDULER
+                     3) FAIR SCHEDULER
+
+
+* The FIFO Scheduler places applications in a queue and runs them in the order of submission.
+* The Capacity Scheduler has a separate dedicated queue that allows the small job to start as soon as it is submitted.
+* In Fair Scheduler, there is no need to reserve a set amount of capacity, since it will dynamically balance resources between all running jobs. 
+
+
+
+Each application running on Hadoop has its own dedicated ApplicationMaster instance. This instance lives in its own, separate container on one of the nodes in the cluster. Each application’s ApplicationMaster periodically sends heartbeat messages to the ResourceManager, as well as requests for additional resources, if needed. Additional resources are granted by the ResourceManager through the assignment of Container Resource leases, which serve as reservations for containers on NodeManagers.
+
+The ApplicationMaster oversees the execution of an application over its full lifespan, from requesting additional containers from the ResourceManger, to submitting container release requests to the NodeManager.
+
+The ApplicationsManager is responsible for accepting job-submissions, negotiating the first container for executing the application specific ApplicationMaster and provides the service for restarting the ApplicationMaster container on failure. 
+
+The per-application ApplicationMaster has the responsibility of negotiating appropriate resource containers from the Scheduler, tracking their status and monitoring for progress.
+
+
+NODE MANAGER :
+
+The NodeManager is the per-machine framework agent who is responsible for containers, monitoring their resource usage (cpu, memory, disk, network) and reporting the same to the ResourceManager/Scheduler.
+
+Conceptually, NodeManagers are much like TaskTrackers in earlier versions of Hadoop. Whereas TaskTrackers used a fixed number of map and reduce slots for scheduling, NodeManagers have a number of dynamically created, arbitrarily-sized Resource Containers (RCs). Unlike slots in MR1, RCs can be used for map tasks, reduce tasks, or tasks from other frameworks.
+
+
+
